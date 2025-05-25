@@ -11,10 +11,10 @@ router.get('/routines/:routineId/exercises', exerciseController.getExercisesByRo
 // Crear nuevo ejercicio para una rutina
 router.post('/routines/:routineId/exercises', exerciseController.createExercise);
 
-// Editar ejercicio
-router.put('/exercises/:id', exerciseController.updateExercise);
+// Editar ejercicio de una rutina
+router.put('/routines/:routineId/exercises/:exerciseId', exerciseController.updateExercise);
 
-// Eliminar ejercicio
-router.delete('/exercises/:id', exerciseController.deleteExercise);
+// Eliminar ejercicio de una rutina
+router.delete('/routines/:routineId/exercises/:exerciseId', exerciseController.deleteExercise);
 
 module.exports = router;

@@ -3,7 +3,8 @@ const { Op } = require('sequelize');
 const User = require('../models/User');
 
 const generateToken = (user) => {
-  return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+  const secret = process.env.JWT_SECRET || 'fitplanner_secret_key_2024';
+  return jwt.sign({ id: user.id }, secret, {
     expiresIn: '7d'
   });
 };
@@ -12,7 +13,7 @@ async function register(req, res) {
   try {
     const { username, email, password } = req.body;
 
-    // Verificar si el usuario ya existe
+    // Check if user already exists
     const existingUser = await User.findOne({
       where: {
         [Op.or]: [{ email }, { username }]
@@ -25,14 +26,14 @@ async function register(req, res) {
       });
     }
 
-    // Crear nuevo usuario
+    // Create new user
     const user = await User.create({
       username,
       email,
       password
     });
 
-    // Generar token
+    // Generate token
     const token = generateToken(user);
 
     res.status(201).json({
@@ -52,19 +53,19 @@ async function login(req, res) {
   try {
     const { email, password } = req.body;
 
-    // Buscar usuario
+    // Find user
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(401).json({ message: 'Email o contraseña incorrectos' });
     }
 
-    // Validar contraseña
+    // Validate password
     const isValidPassword = await user.validatePassword(password);
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Email o contraseña incorrectos' });
     }
 
-    // Generar token
+    // Generate token
     const token = generateToken(user);
 
     res.json({
@@ -94,4 +95,4 @@ async function getCurrentUser(req, res) {
   }
 }
 
-module.exports = { register, login, getCurrentUser };
+module.exports = { register, login, getCurrentUser }; 

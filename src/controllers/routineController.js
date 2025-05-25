@@ -1,15 +1,15 @@
 const Routine = require('../models/Routine');
 const Exercise = require('../models/Exercise');
 
+// Get all routines for the authenticated user
 async function getAllRoutines(req, res) {
   try {
     const routines = await Routine.findAll({
       where: { userId: req.user.id },
       include: [{
         model: Exercise,
-        as: 'Exercises'
-      }],
-      order: [['createdAt', 'DESC']]
+        attributes: ['id', 'name', 'sets', 'reps', 'weight']
+      }]
     });
     res.json(routines);
   } catch (error) {
@@ -17,21 +17,20 @@ async function getAllRoutines(req, res) {
   }
 }
 
+// Get a specific routine
 async function getRoutine(req, res) {
   try {
+    const { id } = req.params;
     const routine = await Routine.findOne({
-      where: { 
-        id: req.params.id,
-        userId: req.user.id 
-      },
+      where: { id, userId: req.user.id },
       include: [{
         model: Exercise,
-        as: 'Exercises'
+        attributes: ['id', 'name', 'sets', 'reps', 'weight']
       }]
     });
 
     if (!routine) {
-      return res.status(404).json({ message: 'Rutina no encontrada' });
+      return res.status(404).json({ message: 'Routine not found' });
     }
 
     res.json(routine);
@@ -40,10 +39,11 @@ async function getRoutine(req, res) {
   }
 }
 
+// Create a new routine
 async function createRoutine(req, res) {
   try {
     const { name, day, objective } = req.body;
-    
+
     const routine = await Routine.create({
       name,
       day,
@@ -57,19 +57,18 @@ async function createRoutine(req, res) {
   }
 }
 
+// Update a routine
 async function updateRoutine(req, res) {
   try {
+    const { id } = req.params;
     const { name, day, objective, completed } = req.body;
-    
+
     const routine = await Routine.findOne({
-      where: { 
-        id: req.params.id,
-        userId: req.user.id 
-      }
+      where: { id, userId: req.user.id }
     });
 
     if (!routine) {
-      return res.status(404).json({ message: 'Rutina no encontrada' });
+      return res.status(404).json({ message: 'Routine not found' });
     }
 
     await routine.update({
@@ -85,41 +84,38 @@ async function updateRoutine(req, res) {
   }
 }
 
+// Delete a routine
 async function deleteRoutine(req, res) {
   try {
+    const { id } = req.params;
+
     const routine = await Routine.findOne({
-      where: { 
-        id: req.params.id,
-        userId: req.user.id 
-      }
+      where: { id, userId: req.user.id }
     });
 
     if (!routine) {
-      return res.status(404).json({ message: 'Rutina no encontrada' });
+      return res.status(404).json({ message: 'Routine not found' });
     }
 
     await routine.destroy();
-    res.json({ message: 'Rutina eliminada correctamente' });
+    res.json({ message: 'Routine deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 }
 
+// Add exercise to routine
 async function addExercise(req, res) {
   try {
+    const { id } = req.params;
     const { name, sets, reps, weight } = req.body;
-    const routineId = req.params.id;
 
-    // Verificar que la rutina pertenece al usuario
     const routine = await Routine.findOne({
-      where: { 
-        id: routineId,
-        userId: req.user.id 
-      }
+      where: { id, userId: req.user.id }
     });
 
     if (!routine) {
-      return res.status(404).json({ message: 'Rutina no encontrada' });
+      return res.status(404).json({ message: 'Routine not found' });
     }
 
     const exercise = await Exercise.create({
@@ -127,7 +123,7 @@ async function addExercise(req, res) {
       sets,
       reps,
       weight,
-      routineId
+      routineId: id
     });
 
     res.status(201).json(exercise);
@@ -136,35 +132,41 @@ async function addExercise(req, res) {
   }
 }
 
+// Delete exercise from routine
 async function deleteExercise(req, res) {
   try {
-    const { id: routineId, exerciseId } = req.params;
+    const { id, exerciseId } = req.params;
 
-    // Verificar que la rutina pertenece al usuario
+    // Verificar que la rutina existe y pertenece al usuario
     const routine = await Routine.findOne({
-      where: { 
-        id: routineId,
-        userId: req.user.id 
-      }
+      where: { id, userId: req.user.id }
     });
 
     if (!routine) {
-      return res.status(404).json({ message: 'Rutina no encontrada' });
+      return res.status(404).json({ message: 'Routine not found' });
     }
 
+    // Buscar y eliminar el ejercicio
     const exercise = await Exercise.findOne({
-      where: { 
-        id: exerciseId,
-        routineId: routineId
-      }
+      where: { id: exerciseId, routineId: id }
     });
 
     if (!exercise) {
-      return res.status(404).json({ message: 'Ejercicio no encontrado' });
+      return res.status(404).json({ message: 'Exercise not found' });
     }
 
     await exercise.destroy();
-    res.json({ message: 'Ejercicio eliminado correctamente' });
+
+    // Devolver la rutina actualizada con sus ejercicios
+    const updatedRoutine = await Routine.findOne({
+      where: { id },
+      include: [{
+        model: Exercise,
+        attributes: ['id', 'name', 'sets', 'reps', 'weight']
+      }]
+    });
+
+    res.json(updatedRoutine);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -178,4 +180,4 @@ module.exports = {
   deleteRoutine,
   addExercise,
   deleteExercise
-};
+}; 

@@ -1,0 +1,1 @@
+export { getExercisesByMuscle } from './ninjaApi';
