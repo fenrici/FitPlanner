@@ -14,10 +14,10 @@
 ## 🏗️ **Arquitectura**
 
 ```
-🎨 FRONTEND (React + Vite + Tailwind)
+🎨 FRONTEND (React + Vite + SASS)
 ├── Puerto: 5173 (desarrollo)
 ├── Framework: React 19.1.0
-├── Styling: Tailwind CSS + SASS
+├── Styling: SASS
 └── HTTP Client: Axios
 
 🔧 BACKEND (Node.js + Express)

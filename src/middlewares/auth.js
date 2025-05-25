@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 const auth = async (req, res, next) => {
   try {
-    // Saltar autenticación solo para rutas de login y registro
+    // Skip authentication for login and register routes only
     if (req.originalUrl === '/api/auth/login' || req.originalUrl === '/api/auth/register') {
       return next();
     }
@@ -14,7 +14,8 @@ const auth = async (req, res, next) => {
       return res.status(401).json({ message: 'Access denied. No token provided.' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = process.env.JWT_SECRET || 'fitplanner_secret_key_2024';
+    const decoded = jwt.verify(token, secret);
     const user = await User.findOne({ where: { id: decoded.id } });
 
     if (!user) {
@@ -35,4 +36,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth;
+module.exports = auth; 

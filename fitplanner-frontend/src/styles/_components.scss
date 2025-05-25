@@ -1,0 +1,858 @@
+// Auth layout for login, register, and loading screens
+.auth-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  padding: 1rem;
+  box-sizing: border-box;
+
+  &.with-background {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+  }
+}
+
+// Auth card with glassmorphism effect
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  border-radius: $radius;
+  box-shadow: $shadow;
+  color: white;
+  overflow: hidden;
+  margin-top: 1.5rem;
+
+  @media (max-width: 600px) {
+    margin-top: 2rem;
+    max-width: 90%;
+  }
+
+  .auth-header {
+    background: linear-gradient(90deg, rgba($color-primary, 0.85), rgba($color-primary, 0.65));
+    backdrop-filter: blur(8px);
+    padding: 1.5rem;
+    border-radius: $radius $radius 0 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      margin: 0;
+    }
+  }
+
+  .auth-body {
+    padding: 2rem 1.5rem;
+
+    .form__group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      color: white;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: $radius;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      @include transition();
+      box-sizing: border-box;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 0 2px rgba($color-primary, 0.5);
+      }
+    }
+
+    .button {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .form__error {
+      background: rgba(229, 57, 53, 0.1);
+      border: 1px solid rgba(229, 57, 53, 0.3);
+      color: #ff6b6b;
+      padding: 0.75rem;
+      border-radius: $radius;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .mt-4 {
+      margin-top: 1.5rem;
+    }
+  }
+
+  .auth-footer {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+
+    .auth-link {
+      color: $color-primary;
+      text-decoration: none;
+      font-weight: 600;
+      @include transition();
+
+      &:hover {
+        color: lighten($color-primary, 10%);
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Button styles
+.button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: $radius;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  @include transition();
+  line-height: 1;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // Primary button
+  &.button--primary,
+  &--primary {
+    background: linear-gradient(135deg, $color-primary 0%, darken($color-primary, 10%) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba($color-primary, 0.3);
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, darken($color-primary, 5%) 0%, darken($color-primary, 15%) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba($color-primary, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  // Secondary button
+  &.button--secondary,
+  &--secondary {
+    background: transparent;
+    color: $color-primary;
+    border: 2px solid $color-primary;
+
+    &:hover:not(:disabled) {
+      background: $color-primary;
+      color: white;
+    }
+  }
+}
+
+.card {
+  border-radius: $radius;
+  box-shadow: $shadow;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.routine-card {
+  cursor: pointer;
+
+  .routine-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .routine-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $color-secondary;
+    }
+
+    .routine-count {
+      font-size: 0.95rem;
+      color: $color-muted;
+      font-weight: 600;
+    }
+  }
+
+  .routine-list {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+
+    li {
+      margin-bottom: 0.5rem;
+      color: $color-dark;
+    }
+  }
+
+  .hidden {
+    display: none;
+  }
+}
+
+.routine-form-card {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 1.5rem;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: $color-secondary;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+    color: $color-muted;
+  }
+
+  label {
+    margin-top: 1rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  input, select {
+    margin-bottom: 1rem;
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .form-buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+
+    .button {
+      flex: 1;
+    }
+  }
+}
+
+.routine-detail-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  border-radius: $radius;
+  box-shadow: $shadow;
+  color: white;
+  overflow: hidden;
+  margin-top: 1.5rem;
+
+  @media (max-width: 600px) {
+    margin-top: 2rem;
+  }
+
+  .routine-header {
+    background: linear-gradient(90deg, rgba($color-primary, 0.85), rgba($color-primary, 0.65));
+    backdrop-filter: blur(8px);
+    padding: 1rem 1.5rem;
+    border-radius: $radius $radius 0 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    position: relative;
+
+    .routine-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .routine-meta {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .edit-routine-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      background: transparent;
+      padding: 0;
+      input, select {
+        margin-bottom: 0.5rem;
+        width: 100%;
+        font-size: 1rem;
+      }
+      .edit-form-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+    }
+
+    .routine-actions {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 2;
+      .button {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.95rem;
+        min-width: 80px;
+      }
+      .button.delete {
+        background: #e53935;
+        color: white;
+        border: none;
+        &:hover {
+          background: darken(#e53935, 10%);
+        }
+      }
+    }
+
+    @media (max-width: 600px) {
+      .routine-actions {
+        position: static;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.7rem;
+        .button {
+          width: 100%;
+          min-width: 120px;
+          font-size: 1.08rem;
+        }
+      }
+    }
+  }
+
+  .routine-body {
+    padding: 1.5rem;
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .add-button {
+      margin-bottom: 1.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+
+      th, td {
+        text-align: left;
+        padding: 0.6rem;
+        color: white;
+      }
+
+      th {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        font-weight: 600;
+      }
+
+      tr:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+
+.exercise-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  border-radius: $radius;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: $shadow;
+  color: white;
+
+  h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.8rem;
+  }
+
+  p {
+    margin: 0.3rem 0;
+    font-size: 0.95rem;
+    color: white;
+
+    strong {
+      font-weight: 600;
+      color: $color-primary;
+    }
+  }
+
+  .select-button {
+    margin-top: 1rem;
+    background-color: $color-primary;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: $radius;
+    @include transition();
+
+    &:hover {
+      background-color: darken($color-primary, 10%);
+    }
+  }
+}
+
+.exercise-results {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 2rem;
+}
+
+.exercise-search .form__group {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.button.secondary {
+  background-color: $color-light;
+  color: $color-primary;
+  border: 2px solid $color-primary;
+  font-weight: 600;
+  padding: 0.6rem 1.3rem;
+  border-radius: $radius;
+  cursor: pointer;
+  font-size: 1rem;
+  min-width: 150px;
+  white-space: nowrap;
+  @include transition();
+
+  &:hover {
+    background-color: $color-primary;
+    color: white;
+  }
+
+  @include responsive(sm) {
+    font-size: 0.97rem;
+    padding: 0.6rem 0.7rem;
+    min-width: 120px;
+  }
+}
+
+.add-exercise-form {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  background: $color-light;
+  border-radius: $radius;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.search-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 1rem 0;
+
+  select {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .manual {
+    flex-shrink: 0;
+  }
+}
+
+.button.add-button {
+  background-color: $color-primary;
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: $radius;
+  @include transition();
+
+  &:hover {
+    background-color: darken($color-primary, 10%);
+  }
+}
+
+.routines-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 2rem;
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+  }
+
+  .new-routine-button {
+    margin-top: 1rem;
+    font-size: 1rem;
+    padding: 0.6rem 1.5rem;
+    background-color: $color-primary;
+    color: white;
+    border: none;
+    border-radius: $radius;
+    @include transition();
+    font-weight: 600;
+
+    &:hover {
+      background-color: darken($color-primary, 10%);
+    }
+  }
+}
+
+.routine-item {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: $radius;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .routine-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .routine-count {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  z-index: 101;
+}
+.hamburger-bar {
+  width: 26px;
+  height: 3px;
+  background: $color-primary;
+  margin: 3px 0;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  right: -260px;
+  width: 240px;
+  height: 100vh;
+  background: rgba(24, 24, 27, 0.98);
+  box-shadow: -2px 0 16px rgba(0,0,0,0.18);
+  z-index: 9999;
+  padding: 2rem 1.2rem 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: right 0.3s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+  opacity: 0;
+
+  &.open {
+    right: 0;
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  .close-menu {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 2.5rem 0 0 0;
+    width: 100%;
+  }
+  li {
+    margin-bottom: 1.2rem;
+    width: 100%;
+  }
+  a, .logout-link {
+    color: white;
+    font-size: 1.1rem;
+    text-decoration: none;
+    font-weight: 600;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 0.3rem 0;
+    cursor: pointer;
+    border-radius: $radius;
+    transition: background 0.2s;
+    display: block;
+    &:hover {
+      background: rgba(255,255,255,0.08);
+    }
+  }
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.35);
+  z-index: 9998;
+}
+
+@media (max-width: 600px) {
+  .sidebar-menu {
+    width: 80vw;
+    min-width: 180px;
+    max-width: 320px;
+    padding: 1.5rem 0.7rem 1rem 0.7rem;
+  }
+}
+
+.exercises-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  table-layout: fixed;
+
+  th, td {
+    text-align: left;
+    padding: 0.5rem 0.3rem;
+    color: white;
+    overflow: visible;
+    word-break: break-word;
+    vertical-align: middle;
+  }
+  th:last-child, td:last-child {
+    min-width: 60px;
+    width: 60px;
+    text-align: right;
+    overflow: visible;
+  }
+}
+
+.exercises-table td:first-child, .exercises-table th:first-child {
+  white-space: normal;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 120px;
+}
+
+@media (max-width: 600px) {
+  .exercises-table td:first-child, .exercises-table th:first-child {
+    max-width: 80px;
+    font-size: 0.97rem;
+  }
+}
+
+.edit-ex-input {
+  width: 48px;
+  min-width: 0;
+  padding: 0.2rem 0.3rem;
+  border: 1px solid rgba(0,191,166,0.3);
+  border-radius: $radius;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  text-align: center;
+  margin-right: 0.1rem;
+  @include transition();
+  &:focus {
+    border-color: $color-primary;
+    background: rgba(0,191,166,0.10);
+  }
+}
+
+.exercise-actions {
+  display: flex;
+  flex-direction: row !important;
+  gap: 0.2rem;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 60px;
+  .icon-btn {
+    background: none;
+    border: none;
+    padding: 0.15rem 0.25rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-primary;
+    @include transition();
+    min-width: 28px;
+    min-height: 28px;
+    .icon {
+      width: 1.1em;
+      height: 1.1em;
+      pointer-events: none;
+      display: block;
+    }
+    &:hover {
+      background: rgba($color-primary, 0.12);
+      color: darken($color-primary, 10%);
+    }
+    &.delete {
+      color: #e53935;
+      &:hover {
+        background: rgba(229,57,53,0.12);
+        color: darken(#e53935, 10%);
+      }
+    }
+  }
+}
+
+@include responsive(sm) {
+  .exercises-table th, .exercises-table td {
+    padding: 0.35rem 0.15rem;
+    font-size: 0.97rem;
+  }
+  .exercises-table th:last-child, .exercises-table td:last-child, .exercise-actions {
+    min-width: 70px;
+    width: 70px;
+  }
+  .edit-ex-input {
+    width: 38px;
+    font-size: 0.97rem;
+    padding: 0.15rem 0.2rem;
+  }
+  .exercise-actions {
+    gap: 0.1rem;
+    .icon-btn {
+      min-width: 24px;
+      min-height: 24px;
+      .icon {
+        width: 1em;
+        height: 1em;
+      }
+    }
+  }
+}
+
+// Dashboard with background image
+.dashboard-layout {
+  &.with-background {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+  }
+}
+
+// Asegurar que no hay marcas en el container de rutinas
+.container.dashboard-page {
+  background: none !important;
+  
+  &::before,
+  &::after {
+    display: none !important;
+  }
+}
+
+// Utility classes for text styling
+.text-error-color {
+  color: #e53935;
+}
+
+.error-info {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+// Add button with margin bottom
+.button.add-exercise {
+  margin-bottom: 1.5rem;
+}
+
+// Exercise search specific styles
+.add-exercise-form {
+  margin-bottom: 16px;
+}
+
+.manual-exercise-button {
+  margin-left: 8px;
+  font-size: 0.95rem;
+  padding: 0.2rem 0.7rem;
+}
+
+.read-more-button {
+  margin-left: 8px;
+  font-size: 0.95rem;
+  padding: 0.2rem 0.7rem;
+}

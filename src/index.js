@@ -23,7 +23,7 @@ app.use('/api/auth', authRoutes);
 
 // Rutas protegidas
 app.use('/api/routines', auth, routineRoutes);
-app.use('/api/exercises', auth, exerciseRoutes);
+app.use('/api', auth, exerciseRoutes);
 
 app.get('/api', (req, res) => {
   res.json({ message: 'Welcome to FitPlanner API' });
