@@ -137,8 +137,8 @@ const ExerciseSearch = ({ onSelectExercise }) => {
               </option>
             ))}
           </select>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="button secondary manual-exercise-button"
             onClick={handleToggleManualForm}
           >

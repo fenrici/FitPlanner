@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const sequelize = require('./config/database');
+const pool = require('./config/config');
 const authRoutes = require('./routes/auth');
 const routineRoutes = require('./routes/routines');
 const exerciseRoutes = require('./routes/exercises');
@@ -40,18 +40,19 @@ const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
   try {
-    await sequelize.authenticate();
+    // Verificar conexión del pool
+    const client = await pool.connect();
     console.log('Database connection has been established successfully.');
-    
-    // Sincronizar modelos de base de datos
-    await sequelize.sync({ alter: true });
-    console.log('Database models synchronized.');
+    client.release();
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Database: PostgreSQL Pool Connection`);
     });
   } catch (error) {
     console.error('Unable to connect to the database:', error);
+    process.exit(1);
   }
 };
 
