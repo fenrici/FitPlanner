@@ -1,183 +1,251 @@
-const Routine = require('../models/Routine');
-const Exercise = require('../models/Exercise');
+const pool = require("../config/config");
+const queries = require("../utils/queries");
 
-// Get all routines for the authenticated user
-async function getAllRoutines(req, res) {
+// GET ALL ROUTINES - Obtener todas las rutinas del usuario
+const getAllRoutines = async (req, res) => {
+  let client, result;
   try {
-    const routines = await Routine.findAll({
-      where: { userId: req.user.id },
-      include: [{
-        model: Exercise,
-        attributes: ['id', 'name', 'sets', 'reps', 'weight']
-      }]
-    });
-    res.json(routines);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    client = await pool.connect();
+    const data = await client.query(queries.getAllRoutines, [req.user.id]);
+    result = data.rows;
+    res.json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  } finally {
+    if (client) client.release();
   }
-}
+};
 
-// Get a specific routine
-async function getRoutine(req, res) {
+// GET ROUTINE BY ID - Obtener rutina específica
+const getRoutine = async (req, res) => {
+  let client, result;
   try {
     const { id } = req.params;
-    const routine = await Routine.findOne({
-      where: { id, userId: req.user.id },
-      include: [{
-        model: Exercise,
-        attributes: ['id', 'name', 'sets', 'reps', 'weight']
-      }]
-    });
-
-    if (!routine) {
+    
+    client = await pool.connect();
+    const data = await client.query(queries.getRoutineById, [id, req.user.id]);
+    
+    if (data.rows.length === 0) {
       return res.status(404).json({ message: 'Routine not found' });
     }
 
-    res.json(routine);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    result = data.rows[0];
+    res.json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  } finally {
+    if (client) client.release();
   }
-}
+};
 
-// Create a new routine
-async function createRoutine(req, res) {
+// CREATE ROUTINE - Crear nueva rutina
+const createRoutine = async (req, res) => {
+  let client, result;
   try {
     const { name, day, objective } = req.body;
 
-    const routine = await Routine.create({
-      name,
-      day,
-      objective,
-      userId: req.user.id
-    });
-
-    res.status(201).json(routine);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+    client = await pool.connect();
+    const data = await client.query(queries.createRoutine, [name, day, objective, req.user.id]);
+    result = data.rows[0];
+    
+    res.status(201).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err.message });
+  } finally {
+    if (client) client.release();
   }
-}
+};
 
-// Update a routine
-async function updateRoutine(req, res) {
+// UPDATE ROUTINE - Actualizar rutina
+const updateRoutine = async (req, res) => {
+  let client, result;
   try {
     const { id } = req.params;
     const { name, day, objective, completed } = req.body;
 
-    const routine = await Routine.findOne({
-      where: { id, userId: req.user.id }
-    });
+    client = await pool.connect();
 
-    if (!routine) {
+    // Verificar que la rutina existe y pertenece al usuario
+    const existingRoutine = await client.query(queries.checkRoutineOwnership, [id, req.user.id]);
+    
+    if (existingRoutine.rows.length === 0) {
       return res.status(404).json({ message: 'Routine not found' });
     }
 
-    await routine.update({
-      name: name || routine.name,
-      day: day || routine.day,
-      objective: objective || routine.objective,
-      completed: completed !== undefined ? completed : routine.completed
-    });
+    const routine = existingRoutine.rows[0];
 
-    res.json(routine);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+    // Actualizar rutina
+    const data = await client.query(queries.updateRoutine, [
+      name || routine.name,
+      day || routine.day,
+      objective || routine.objective,
+      completed !== undefined ? completed : routine.completed,
+      id,
+      req.user.id
+    ]);
+
+    result = data.rows[0];
+    res.json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err.message });
+  } finally {
+    if (client) client.release();
   }
-}
+};
 
-// Delete a routine
-async function deleteRoutine(req, res) {
+// DELETE ROUTINE - Eliminar rutina
+const deleteRoutine = async (req, res) => {
+  let client, result;
   try {
     const { id } = req.params;
 
-    const routine = await Routine.findOne({
-      where: { id, userId: req.user.id }
-    });
+    client = await pool.connect();
 
-    if (!routine) {
+    // Verificar que la rutina existe y pertenece al usuario
+    const existingRoutine = await client.query(queries.checkRoutineOwnership, [id, req.user.id]);
+    
+    if (existingRoutine.rows.length === 0) {
       return res.status(404).json({ message: 'Routine not found' });
     }
 
-    await routine.destroy();
-    res.json({ message: 'Routine deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
+    // Eliminar rutina (los ejercicios se eliminan por cascade)
+    const data = await client.query(queries.deleteRoutine, [id, req.user.id]);
+    result = data.rowCount;
 
-// Add exercise to routine
-async function addExercise(req, res) {
+    res.json({ message: 'Routine deleted successfully' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  } finally {
+    if (client) client.release();
+  }
+};
+
+// ADD EXERCISE - Agregar ejercicio a rutina
+const addExercise = async (req, res) => {
+  let client, result;
   try {
     const { id } = req.params;
     const { name, sets, reps, weight } = req.body;
 
-    const routine = await Routine.findOne({
-      where: { id, userId: req.user.id }
-    });
+    client = await pool.connect();
 
-    if (!routine) {
+    // Verificar que la rutina existe y pertenece al usuario
+    const existingRoutine = await client.query(queries.checkRoutineOwnership, [id, req.user.id]);
+    
+    if (existingRoutine.rows.length === 0) {
       return res.status(404).json({ message: 'Routine not found' });
     }
 
-    const exercise = await Exercise.create({
-      name,
-      sets,
-      reps,
-      weight,
-      routineId: id
-    });
+    // Crear ejercicio
+    const data = await client.query(queries.createExercise, [name, sets, reps, weight, id]);
+    result = data.rows[0];
 
-    res.status(201).json(exercise);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(201).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err.message });
+  } finally {
+    if (client) client.release();
   }
-}
+};
 
-// Delete exercise from routine
-async function deleteExercise(req, res) {
+// DELETE EXERCISE - Eliminar ejercicio de rutina
+const deleteExercise = async (req, res) => {
+  let client, result;
   try {
     const { id, exerciseId } = req.params;
 
-    // Verificar que la rutina existe y pertenece al usuario
-    const routine = await Routine.findOne({
-      where: { id, userId: req.user.id }
-    });
+    client = await pool.connect();
 
-    if (!routine) {
+    // Verificar que la rutina existe y pertenece al usuario
+    const existingRoutine = await client.query(queries.checkRoutineOwnership, [id, req.user.id]);
+    
+    if (existingRoutine.rows.length === 0) {
       return res.status(404).json({ message: 'Routine not found' });
     }
 
-    // Buscar y eliminar el ejercicio
-    const exercise = await Exercise.findOne({
-      where: { id: exerciseId, routineId: id }
-    });
-
-    if (!exercise) {
+    // Verificar que el ejercicio existe en la rutina
+    const existingExercise = await client.query(queries.checkExerciseExists, [exerciseId, id]);
+    
+    if (existingExercise.rows.length === 0) {
       return res.status(404).json({ message: 'Exercise not found' });
     }
 
-    await exercise.destroy();
+    // Eliminar ejercicio
+    await client.query(queries.deleteExercise, [exerciseId, id]);
 
     // Devolver la rutina actualizada con sus ejercicios
-    const updatedRoutine = await Routine.findOne({
-      where: { id },
-      include: [{
-        model: Exercise,
-        attributes: ['id', 'name', 'sets', 'reps', 'weight']
-      }]
-    });
+    const updatedRoutine = await client.query(queries.getRoutineById, [id, req.user.id]);
+    result = updatedRoutine.rows[0];
 
-    res.json(updatedRoutine);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  } finally {
+    if (client) client.release();
   }
-}
+};
 
-module.exports = {
+// MARK ROUTINE COMPLETED - Marcar rutina como completada
+const markCompleted = async (req, res) => {
+  let client, result;
+  try {
+    const { id } = req.params;
+
+    client = await pool.connect();
+
+    // Verificar que la rutina existe y pertenece al usuario
+    const existingRoutine = await client.query(queries.checkRoutineOwnership, [id, req.user.id]);
+    
+    if (existingRoutine.rows.length === 0) {
+      return res.status(404).json({ message: 'Routine not found' });
+    }
+
+    // Marcar como completada
+    const data = await client.query(queries.markRoutineCompleted, [id, req.user.id]);
+    result = data.rows[0];
+
+    res.json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  } finally {
+    if (client) client.release();
+  }
+};
+
+// Función auxiliar para uso interno - obtener rutinas sin middleware de autenticación
+const getRoutinesByUserId = async (userId) => {
+  let client, result;
+  try {
+    client = await pool.connect();
+    const data = await client.query(queries.getAllRoutines, [userId]);
+    result = data.rows;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
+  return result;
+};
+
+const routineService = {
   getAllRoutines,
   getRoutine,
   createRoutine,
   updateRoutine,
   deleteRoutine,
   addExercise,
-  deleteExercise
-}; 
+  deleteExercise,
+  markCompleted,
+  getRoutinesByUserId
+};
+
+module.exports = routineService; 

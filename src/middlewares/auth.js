@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const pool = require('../config/config');
+const queries = require('../utils/queries');
 
 const auth = async (req, res, next) => {
+  let client;
   try {
     // Skip authentication for login and register routes only
     if (req.originalUrl === '/api/auth/login' || req.originalUrl === '/api/auth/register') {
@@ -16,13 +18,16 @@ const auth = async (req, res, next) => {
 
     const secret = process.env.JWT_SECRET || 'fitplanner_secret_key_2024';
     const decoded = jwt.verify(token, secret);
-    const user = await User.findOne({ where: { id: decoded.id } });
+    
+    // Buscar usuario con pool de conexiones
+    client = await pool.connect();
+    const data = await client.query(queries.getUserById, [decoded.id]);
 
-    if (!user) {
+    if (data.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid token. User not found.' });
     }
 
-    req.user = user;
+    req.user = data.rows[0];
     req.token = token;
     next();
   } catch (error) {
@@ -33,6 +38,8 @@ const auth = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid token.' });
     }
     res.status(401).json({ message: 'Please authenticate.' });
+  } finally {
+    if (client) client.release();
   }
 };
 

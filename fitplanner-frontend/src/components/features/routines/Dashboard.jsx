@@ -95,7 +95,7 @@ const Dashboard = () => {
                   {routine.name}
                 </span>
                 <span className="routine-count">
-                  {(routine.Exercises?.length || routine.exercises?.length || 0)} ejercicios
+                  {(routine.exercises?.length || 0)} ejercicios
                 </span>
                 </div>
             ))}

@@ -390,7 +390,7 @@ const RoutineDetail = () => {
               </form>
             )}
 
-            {routine.Exercises && routine.Exercises.length > 0 ? (
+            {routine.exercises && routine.exercises.length > 0 ? (
               <div className="exercises-list--centered">
                 <div className="exercises-table-wrapper">
                   <table className="exercises-table">
@@ -404,7 +404,7 @@ const RoutineDetail = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {routine.Exercises.map((ex) => (
+                      {routine.exercises.map((ex) => (
                         <tr key={ex.id}>
                           {editingExerciseId === ex.id ? (
                             <>
