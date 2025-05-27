@@ -1,16 +1,13 @@
-import api from './api';
+import { publicRequest, protectedRequest } from './api';
 
 export const login = async (credentials) => {
-  const response = await api.post('/auth/login', credentials);
-  return response.data;
+  return await publicRequest('/auth/login', credentials);
 };
 
 export const register = async (userData) => {
-  const response = await api.post('/auth/register', userData);
-  return response.data;
+  return await publicRequest('/auth/register', userData);
 };
 
 export const getCurrentUser = async () => {
-  const response = await api.get('/auth/me');
-  return response.data;
+  return await protectedRequest('GET', '/auth/me');
 }; 

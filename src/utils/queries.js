@@ -1,6 +1,6 @@
-// ===========================
+
 // QUERIES para USUARIOS
-// ===========================
+
 
 const getUsers = `
   SELECT id, username, email, "createdAt", "updatedAt" 
@@ -41,9 +41,9 @@ const checkUserExists = `
   WHERE email = $1 OR username = $2
 `;
 
-// ===========================
+
 // QUERIES para RUTINAS
-// ===========================
+
 
 const getAllRoutines = `
   SELECT 
@@ -135,9 +135,9 @@ const markRoutineCompleted = `
   RETURNING *
 `;
 
-// ===========================
+
 // QUERIES para EJERCICIOS
-// ===========================
+
 
 const getExercisesByRoutine = `
   SELECT * FROM "Exercises" 
@@ -173,9 +173,9 @@ const checkExerciseExists = `
   WHERE id = $1 AND "routineId" = $2
 `;
 
-// ===========================
+
 // QUERIES ESTADÍSTICAS
-// ===========================
+
 
 const getGeneralStats = `
   SELECT 
