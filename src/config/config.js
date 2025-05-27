@@ -5,11 +5,11 @@ dotenv.config();
 
 // Pool de conexiones PostgreSQL
 const pool = new Pool({
-  connectionString: 'postgresql://tienda_final_user:nPw9WddPYxQ7GrEzwvFzd24fp6yvu8tk@dpg-d0mrhiumcj7s739ivvk0-a.frankfurt-postgres.render.com/tienda_final',
-  ssl: {
+  connectionString: process.env.DATABASE_URL || 'postgresql://localhost:5432/fitplanner_dev',
+  ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('render.com') ? {
     require: true,
     rejectUnauthorized: false
-  }
+  } : false
 });
 
 // Verificar conexión al inicializar
