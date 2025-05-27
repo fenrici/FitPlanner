@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import { protectedRequest } from '../services/api';
 
 const useFetch = (url) => {
     const [loading, setLoading] = useState(true);
@@ -11,8 +11,8 @@ const useFetch = (url) => {
             try {
                 setLoading(true);
                 setError(null);
-                const response = await api.get(url);
-                setResult(response.data);
+                const data = await protectedRequest('GET', url);
+                setResult(data);
                 setLoading(false);
             } catch (err) {
                 console.log(err);

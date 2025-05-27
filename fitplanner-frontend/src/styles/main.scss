@@ -1,7 +1,7 @@
-// Main SASS file - imports all partials in correct order
-@import 'variables';
-@import 'mixins';
-@import 'reset';
-@import 'layout';
-@import 'forms';
-@import 'components'; 
+// Main styles entry point
+@use 'variables' as *;
+
+@use 'reset';
+@use 'layout';
+@use 'forms';
+@use 'components'; 

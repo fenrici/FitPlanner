@@ -1,41 +1,33 @@
-import api from './api';
+import { protectedRequest } from './api';
 
 export const getRoutines = async () => {
-  const response = await api.get('/routines');
-  return response.data;
+  return await protectedRequest('GET', '/routines');
 };
 
 export const getRoutine = async (id) => {
-  const response = await api.get(`/routines/${id}`);
-  return response.data;
+  return await protectedRequest('GET', `/routines/${id}`);
 };
 
 export const createRoutine = async (routineData) => {
-  const response = await api.post('/routines', routineData);
-  return response.data;
+  return await protectedRequest('POST', '/routines', routineData);
 };
 
 export const updateRoutine = async (id, routineData) => {
-  const response = await api.put(`/routines/${id}`, routineData);
-  return response.data;
+  return await protectedRequest('PUT', `/routines/${id}`, routineData);
 };
 
 export const deleteRoutine = async (id) => {
-  const response = await api.delete(`/routines/${id}`);
-  return response.data;
+  return await protectedRequest('DELETE', `/routines/${id}`);
 };
 
 export const addExerciseToRoutine = async (routineId, exerciseData) => {
-  const response = await api.post(`/routines/${routineId}/exercises`, exerciseData);
-  return response.data;
+  return await protectedRequest('POST', `/routines/${routineId}/exercises`, exerciseData);
 };
 
 export const updateExercise = async (routineId, exerciseId, exerciseData) => {
-  const response = await api.put(`/routines/${routineId}/exercises/${exerciseId}`, exerciseData);
-  return response.data;
+  return await protectedRequest('PUT', `/routines/${routineId}/exercises/${exerciseId}`, exerciseData);
 };
 
 export const removeExerciseFromRoutine = async (routineId, exerciseId) => {
-  const response = await api.delete(`/routines/${routineId}/exercises/${exerciseId}`);
-  return response.data;
+  return await protectedRequest('DELETE', `/routines/${routineId}/exercises/${exerciseId}`);
 }; 

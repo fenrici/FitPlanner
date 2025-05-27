@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { getExercisesByMuscle } from '../../../services';
+import { useError } from '../../../hooks';
+import Spinner from '../../common/Spinner';
 
 const VALID_MUSCLES = [
   'abdominals',
@@ -42,7 +44,7 @@ const MUSCLE_LABELS = {
 const ExerciseSearch = ({ onSelectExercise }) => {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { setError, clearError, ErrorDisplay } = useError();
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [showManualForm, setShowManualForm] = useState(false);
   const [manualExercise, setManualExercise] = useState({
@@ -60,7 +62,7 @@ const ExerciseSearch = ({ onSelectExercise }) => {
       return;
     }
     setLoading(true);
-    setError('');
+    clearError();
     try {
       const data = await getExercisesByMuscle(selectedMuscle);
       setExercises(data);
@@ -121,7 +123,7 @@ const ExerciseSearch = ({ onSelectExercise }) => {
   };
 
   return (
-    <div className="exercise-search">
+    <section className="exercise-search">
       <form onSubmit={handleSearch} className="mb-4">
         <div className="search-actions">
           <select
@@ -154,7 +156,7 @@ const ExerciseSearch = ({ onSelectExercise }) => {
 
       {showManualForm && (
         <form onSubmit={handleManualSubmit} className="add-exercise-form">
-          <div className="add-exercise-title">Agregar ejercicio manual</div>
+          <header className="add-exercise-title">Agregar ejercicio manual</header>
           <div className="add-exercise-fields">
             <input
               type="text"
@@ -188,29 +190,29 @@ const ExerciseSearch = ({ onSelectExercise }) => {
               onChange={(e) => handleManualExerciseChange('weight', e.target.value)}
             />
           </div>
-          <div className="add-exercise-buttons">
+          <section className="add-exercise-buttons">
             <button type="button" className="button secondary" onClick={handleCloseManualForm}>
               Cancelar
             </button>
             <button type="submit" className="button">
               Agregar
             </button>
-          </div>
+          </section>
         </form>
       )}
 
-      {error && <div className="form__error mb-4">{error}</div>}
+      <ErrorDisplay />
 
-      <div className="exercise-results">
+      <section className="exercise-results">
         {exercises.map((exercise, index) => {
           const isLong = exercise.instructions && exercise.instructions.length > 50;
           const isExpanded = expanded[index];
           return (
-            <div
+            <article
               key={`exercise-${exercise.name}-${index}`}
               className="exercise-card"
             >
-              <div className="exercise-card__content">
+              <section className="exercise-card__content">
                 <h4 className="exercise-card__title">{exercise.name}</h4>
                 <p><strong>Músculo:</strong> {exercise.muscle}</p>
                 <p><strong>Tipo:</strong> {exercise.type}</p>
@@ -236,16 +238,18 @@ const ExerciseSearch = ({ onSelectExercise }) => {
                 >
                   Seleccionar
                 </button>
-              </div>
-            </div>
+              </section>
+            </article>
           );
         })}
-      </div>
+      </section>
 
       {loading && (
-        <div className="text-center mt-4">Cargando...</div>
+        <section className="text-center mt-4">
+          <Spinner size="medium" />
+        </section>
       )}
-    </div>
+    </section>
   );
 };
 

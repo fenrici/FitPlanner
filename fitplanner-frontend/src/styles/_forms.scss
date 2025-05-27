@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 input, select, textarea {
   width: 100%;
   padding: 0.75rem;
@@ -23,6 +25,7 @@ label {
   font-weight: 600;
   margin-bottom: 0.5rem;
   display: block;
+  color: #ffffff;
 } 
 
 // Form utility classes
@@ -34,7 +37,7 @@ label {
   font-weight: 600;
   margin-bottom: 0.5rem;
   display: block;
-  color: $color-dark;
+  color: #ffffff;
 }
 
 .form__input {

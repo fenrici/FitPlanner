@@ -6,33 +6,55 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
-// Interceptor para agregar el token
-api.interceptors.request.use((config) => {
-  // No aplicar el token en las rutas de login y register
-  if (!config.url.includes('/auth/login') && !config.url.includes('/auth/register')) {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+// Para rutas públicas (login/register)
+export const publicRequest = async (url, data) => {
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    throw error;
   }
-  return config;
-});
+};
 
-// Interceptor para manejar errores de autenticación
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Solo redirigir a login si es un error 401 Y no estamos en rutas de auth
-    if (error.response?.status === 401 && 
-        !error.config?.url?.includes('/auth/login') && 
-        !error.config?.url?.includes('/auth/register')) {
-      // Token expirado o inválido
+// Para rutas protegidas
+export const protectedRequest = async (method, url, data = null) => {
+  try {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      // Redirigir a login si no hay token
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+      return;
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+
+    let response;
+    if (method === 'GET') {
+      response = await api.get(url, config);
+    } else if (method === 'POST') {
+      response = await api.post(url, data, config);
+    } else if (method === 'PUT') {
+      response = await api.put(url, data, config);
+    } else if (method === 'DELETE') {
+      response = await api.delete(url, config);
+    }
+
+    return response.data;
+  } catch (error) {
+    // Manejar errores 401 manualmente
+    if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
-    return Promise.reject(error);
+    throw error;
   }
-);
+};
 
 export default api; 

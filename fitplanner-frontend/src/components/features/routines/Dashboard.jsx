@@ -1,108 +1,68 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../../store';
-import { useFetch } from '../../../hooks';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useFetch, useError } from '../../../hooks';
+import { AppLayout } from '../../layout';
+import Spinner from '../../common/Spinner';
 import { fondoFitplanner } from '../../../assets';
 
 const Dashboard = () => {
-  const { loading, result: routines, error } = useFetch('/routines');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { logout } = useAuth();
+  const { loading, result: routines } = useFetch('/routines');
+  const { ErrorDisplay } = useError();
   const navigate = useNavigate();
-
-  const backgroundStyle = {
-    backgroundImage: `url(${fondoFitplanner})`
-  };
-
-  const handleLogout = () => {
-    setMenuOpen(false);
-    logout();
-    navigate('/login');
-  };
-
-  const handleMenuOpen = () => {
-    setMenuOpen(true);
-  };
-
-  const handleMenuClose = () => {
-    setMenuOpen(false);
-  };
-
-  const handleBackdropClick = () => {
-    setMenuOpen(false);
-  };
 
   const handleRoutineClick = (routineId) => {
     navigate(`/routines/${routineId}`);
   };
 
-  const handleMenuLinkClick = () => {
-    setMenuOpen(false);
-  };
-
   if (loading) {
     return (
-      <div className="auth-layout with-background" style={backgroundStyle}>
-        <div className="text-center">Cargando...</div>
+      <div className="auth-layout with-background" style={{ backgroundImage: `url(${fondoFitplanner})` }}>
+        <main className="main">
+          <section className="text-center">
+            <Spinner size="large" />
+          </section>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-layout with-background" style={backgroundStyle}>
-      <nav className="navbar">
-        <span className="navbar__left">FitPlanner</span>
-        <button className="hamburger" onClick={handleMenuOpen} aria-label="Abrir menú">
-          <span className="hamburger-bar"></span>
-          <span className="hamburger-bar"></span>
-          <span className="hamburger-bar"></span>
-        </button>
-      </nav>
-
-      <aside className={`sidebar-menu${menuOpen ? ' open' : ''}`}> 
-        <button className="close-menu" onClick={handleMenuClose} aria-label="Cerrar menú">×</button>
-        <ul>
-          <li><Link to="/dashboard" onClick={handleMenuLinkClick}>Home</Link></li>
-          <li><button className="logout-link" onClick={handleLogout}>Cerrar sesión</button></li>
-        </ul>
-      </aside>
-      {menuOpen && <div className="sidebar-backdrop" onClick={handleBackdropClick}></div>}
-
+    <AppLayout>
       <main className="container dashboard-page">
-        <div className="routines-header">
-          <span className="section-title">Mis Rutinas</span>
+        <header className="routines-header">
+          <h1 className="section-title">Mis Rutinas</h1>
           <Link to="/routines/new" className="new-routine-button">
             + Nueva Rutina
           </Link>
-        </div>
+        </header>
 
-        {error && <div className="form__error mb-4 text-center">{error}</div>}
+        <ErrorDisplay className="form__error mb-4 text-center" />
 
         {routines.length === 0 ? (
-          <div className="text-center p-4">
+          <section className="text-center p-4">
             <h3 className="mb-4">No tienes rutinas</h3>
             <p>Comienza creando una nueva rutina.</p>
-          </div>
+          </section>
         ) : (
-          <div className="routine-card-list">
+          <section className="routine-card-list">
             {routines.map((routine) => (
-              <div
+              <article
                 key={routine.id}
                 onClick={() => handleRoutineClick(routine.id)}
                 className="routine-item"
               >
-                <span className="routine-title">
+                <h3 className="routine-title">
                   {routine.name}
-                </span>
-                <span className="routine-count">
+                </h3>
+                <p className="routine-count">
                   {(routine.exercises?.length || 0)} ejercicios
-                </span>
-                </div>
+                </p>
+                </article>
             ))}
-          </div>
+          </section>
         )}
       </main>
-    </div>
+    </AppLayout>
   );
 };
 

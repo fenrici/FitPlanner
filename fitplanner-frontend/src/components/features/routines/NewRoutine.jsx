@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../../store';
-import { useForm } from '../../../hooks';
+import { useForm, useError } from '../../../hooks';
 import { createRoutine } from '../../../services';
-import { fondoFitplanner } from '../../../assets';
+import { AppLayout } from '../../layout';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const OBJECTIVES = [
@@ -15,8 +14,6 @@ const OBJECTIVES = [
 ];
 
 const NewRoutine = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { logout } = useAuth();
   const navigate = useNavigate();
   
   const { formData, handleChange } = useForm({
@@ -25,39 +22,13 @@ const NewRoutine = () => {
     objective: ''
   });
   
-  const [error, setError] = useState('');
+  const { setError, clearError, ErrorDisplay } = useError();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const backgroundStyle = {
-    backgroundImage: `url(${fondoFitplanner})`
-  };
-
-  const handleLogout = () => {
-    setMenuOpen(false);
-    logout();
-    navigate('/login');
-  };
-
-  const handleMenuOpen = () => {
-    setMenuOpen(true);
-  };
-
-  const handleMenuClose = () => {
-    setMenuOpen(false);
-  };
-
-  const handleBackdropClick = () => {
-    setMenuOpen(false);
-  };
-
-  const handleMenuLinkClick = () => {
-    setMenuOpen(false);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
+    clearError();
 
     if (!formData.name.trim()) {
       setError('El nombre de la rutina es requerido');
@@ -77,33 +48,15 @@ const NewRoutine = () => {
   };
 
   return (
-    <div className="dashboard-layout with-background" style={backgroundStyle}>
-      <nav className="navbar">
-        <span className="navbar__left">FitPlanner</span>
-        <button className="hamburger" onClick={handleMenuOpen} aria-label="Abrir menú">
-          <span className="hamburger-bar"></span>
-          <span className="hamburger-bar"></span>
-          <span className="hamburger-bar"></span>
-        </button>
-      </nav>
-
-      <aside className={`sidebar-menu${menuOpen ? ' open' : ''}`}>
-        <button className="close-menu" onClick={handleMenuClose} aria-label="Cerrar menú">×</button>
-        <ul>
-          <li><Link to="/dashboard" onClick={handleMenuLinkClick}>Home</Link></li>
-          <li><button className="logout-link" onClick={handleLogout}>Cerrar sesión</button></li>
-        </ul>
-      </aside>
-      {menuOpen && <div className="sidebar-backdrop" onClick={handleBackdropClick}></div>}
-
+    <AppLayout>
       <main className="main top-aligned">
-        <div className="routine-form-card">
-          <h2>Nueva Rutina</h2>
-          <p>Crea una nueva rutina de ejercicios</p>
+        <section className="routine-form-card">
+          <header>
+            <h2>Nueva Rutina</h2>
+            <p>Crea una nueva rutina de ejercicios</p>
+          </header>
 
-          {error && (
-            <div className="form__error mb-4">{error}</div>
-          )}
+          <ErrorDisplay />
 
           <form onSubmit={handleSubmit} className="w-full">
             <div className="form__group">
@@ -155,7 +108,7 @@ const NewRoutine = () => {
               </select>
             </div>
 
-            <div className="form-buttons">
+            <section className="form-buttons">
               <Link to="/dashboard" className="button button--secondary">
                 Cancelar
               </Link>
@@ -166,11 +119,11 @@ const NewRoutine = () => {
               >
                 {isSubmitting ? 'Creando...' : 'Crear Rutina'}
               </button>
-            </div>
+            </section>
           </form>
-        </div>
+        </section>
       </main>
-    </div>
+    </AppLayout>
   );
 };
 

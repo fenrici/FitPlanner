@@ -10,7 +10,7 @@ const generateToken = (user) => {
   });
 };
 
-// Función para verificar permisos (opcional)
+// Función para verificar permisos
 const verifyPassword = async (providedPassword, storedPasswordHash) => {
   const match = await bcrypt.compare(providedPassword, storedPasswordHash);
   if (!match) {
