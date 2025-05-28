@@ -26,7 +26,7 @@
 🔧 BACKEND (Node.js + Express + PostgreSQL)
 ├── Puerto: 3000
 ├── Framework: Express 4.18.2
-├── Base de Datos: PostgreSQL (Render Cloud)
+├── Base de Datos: PostgreSQL (Render)
 ├── Database: SQL directo con Pool connections
 ├── Autenticación: JWT + bcrypt
 ├── Middleware: CORS + Auth protection
@@ -103,13 +103,12 @@ DATABASE_URL=postgresql://...
 - Registro con validaciones de email y contraseña
 - Login con JWT tokens (localStorage)
 - Middleware de protección en rutas privadas
-- Auto-redirect en sesiones expiradas
 
 ### 🏃‍♂️ Gestión de Rutinas
 - CRUD completo (crear, leer, actualizar, eliminar)
 - Clasificación por día de la semana
 - Objetivos personalizados (fuerza, resistencia, etc.)
-- Estados de completado
+
 
 ### 💪 Gestión de Ejercicios
 - Añadir ejercicios desde catálogo externo (Ninja API)
@@ -118,7 +117,7 @@ DATABASE_URL=postgresql://...
 - Eliminación individual de ejercicios
 
 ### 🎨 Interfaz de Usuario
-- Diseño glassmorphism moderno
+- Diseño moderno
 - Responsive design mobile-first
 - Loading states optimizados
 - Error handling centralizado
@@ -141,10 +140,6 @@ DATABASE_URL=postgresql://...
 - **bcrypt** 5.1.1 - Hash de contraseñas
 - **CORS** 2.8.5 - Cross-origin requests
 
-### DevOps & Tools:
-- **Nodemon** - Auto-reload en desarrollo
-- **ESLint** - Linting de código
-- **Render** - Hosting PostgreSQL
 
 ## 📝 **API Endpoints**
 
@@ -198,24 +193,10 @@ src/
 
 ### Performance:
 - Pool de conexiones PostgreSQL
-- Hooks memoizados en React
-- SASS modernizado (0 deprecation warnings)
+- Hooks
+- SASS modernizado 
 - Loading states optimizados
 
-### Código:
-- 380 líneas de código duplicado eliminadas
-- Componentes reutilizables centralizados
-- Error handling unificado
-- Arquitectura DRY (Don't Repeat Yourself)
-
-## 🎯 **Estado del Proyecto**
-
-**✅ Production Ready**
-- Backend estable con PostgreSQL en cloud
-- Frontend optimizado y sin warnings
-- Autenticación JWT segura
-- UI/UX moderna y responsive
-- Código mantenible y escalable
 
 ## 👨‍💻 **Desarrollador**
 
